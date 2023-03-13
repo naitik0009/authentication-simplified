@@ -6,7 +6,7 @@ function errorHandler (error,request,response,next){
 
     err.message = error.message;
 
-    console.log(error);
+    // console.log(error);
 
     if(error.code === 11000){
         const message = `Duplicate Field Value Entered`;
@@ -18,7 +18,7 @@ function errorHandler (error,request,response,next){
         err = new ErrorResponse(message,400);
     }
 
-    response.status(err.statusCode || 500).json({code:"error",message:err.message || "Server Error"});
+    response.status(err.statusCode || 500).json({code:"ErrorResponse",message:err.message || "Server Error"});
 
 }
 

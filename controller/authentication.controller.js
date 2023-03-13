@@ -7,7 +7,8 @@ async function register (request,response,next){
         const result = await userModel.create({
             username,email,password
         });
-        response.status(200).json({code:"success",message:`User with username ${username} is registered successfully`});    
+        // response.status(200).json({code:"success",message:`User with username ${username} is registered successfully`});   
+        sendToken(result,201,response); 
     } catch (error) {
        next(error);
     };
@@ -33,13 +34,19 @@ async function login (request,response,next){
           return  next(new ErrorResponse("Please Provide a valid password",401))
             
         }
-        return response.status(201).json({code:"success",message:result});
+        // return response.status(201).json({code:"success",message:result});
+        sendToken(result,200,response);
     } catch (error) {
         next(error);
         
     }
 
 };
+
+function sendToken (user,statusCode,response){
+    const token = user.getSignedToken();
+    return response.status(statusCode).json({code:"success",token});
+}
 
 async function forgetPassword (request,response){
     return response.send("forget Password");

@@ -14,6 +14,7 @@
     
 //Use this model for mysql database
 // }
+const jwt = require("jsonwebtoken");
 const encrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
@@ -48,6 +49,10 @@ userSchema.pre("save",async function(next){
 
 userSchema.methods.matchPassword = async function(password){
     return await encrypt.compare(password,this.password);
+}
+
+userSchema.methods.getSignedToken = function(){
+    return jwt.sign({id:this._id},process.env.SECRET_KEY,{expiresIn:process.env.JWT_EXPIRES});
 }
 
 const userModel = mongoose.model("User",userSchema);
