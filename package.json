@@ -1,0 +1,30 @@
+{
+  "name": "authentication_simplified_",
+  "version": "1.0.0",
+  "description": "Let's create a simplified and secure auth infrastructure ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/naitik0009/authentication-simplified.git"
+  },
+  "author": "Niko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/naitik0009/authentication-simplified/issues"
+  },
+  "homepage": "https://github.com/naitik0009/authentication-simplified#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
+}
