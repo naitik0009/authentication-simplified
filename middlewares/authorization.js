@@ -1,6 +1,6 @@
-const jwt = require("jwt");
+const jwt = require("jsonwebtoken");
 const userModel = require("../database/models/auth.model");
-const User = require("../database/models/auth.model");
+
 const {ErrorResponse} = require("../utils/errorResponse.utils");
 
 async function checkAuthorization(request, response, next) {
