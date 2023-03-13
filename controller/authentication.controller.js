@@ -1,5 +1,6 @@
 const userModel = require("../database/models/auth.model");
 const {ErrorResponse} = require("../utils/errorResponse.utils");
+
 async function register (request,response,next){
     
     try {

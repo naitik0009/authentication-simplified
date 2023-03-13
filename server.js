@@ -3,7 +3,7 @@ const port = process.env.PORT || 8000;
 const express = require("express");
 const errorHandler = require("./middlewares/errorHandler");
 const app = express();
-const authorized = require("./middlewares/authorization");
+
 const authRoute = require("./routes/auth.routes");
 const authorizedRoute = require("./routes/authorized.routes");
 const connect = require("./database/connect");
@@ -13,7 +13,7 @@ connect();
 
 // app.use("/api/v1",authRoute,errorHandler); valid approach
 app.use("/api/v1",authRoute);
-app.use("/api/v1",authorized,authorizedRoute)
+app.use("/api/v1",authorizedRoute)
 app.use(errorHandler);
 const establish = app.listen(port,()=>console.log(`Connected to server successfully port is ${port}`));
 
