@@ -6,7 +6,7 @@ const {ErrorResponse} = require("../utils/errorResponse.utils");
 async function checkAuthorization(request, response, next) {
     let token;
 
-    if (request.headers.authorization && request.headers.authorization.startsWith("fuck")) {
+    if (request.headers.authorization && request.headers.authorization.startsWith("bearer")) {
         token = request.headers.authorization.split(" ")[1];// fuck sjddfhjkssdhfshdkfjhsjdfh = sdjkdfhkjsdhfjkshf
     }
     if(!token){

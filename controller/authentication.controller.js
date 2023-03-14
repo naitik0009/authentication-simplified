@@ -1,6 +1,6 @@
 const userModel = require("../database/models/auth.model");
 const {ErrorResponse} = require("../utils/errorResponse.utils");
-
+const sendMail = require("../utils/send.email");
 async function register (request,response,next){
     
     try {
@@ -49,8 +49,38 @@ function sendToken (user,statusCode,response){
     return response.status(statusCode).json({code:"success",token});
 }
 
-async function forgetPassword (request,response){
-    return response.send("forget Password");
+async function forgetPassword (request,response,next){
+    const {email} = request.body;
+    try {
+        const user = await userModel.findOne({email});
+        if(!user){
+            return next(new ErrorResponse("can't find any user with this email",404));
+        }
+        const token = user.getResetPasswordToken();
+        const resetUrl = `http://localhost:3000/resetPassword/${token}`;
+        const message = `<h3>Hello you've requested us to reset your password</h3>
+                            <p>Please go to this link to reset your password</p>
+                            <a href = "${resetUrl}" clicktracking="off"> Click Here</a>
+        `;
+try {
+    await user.save();
+    await sendMail({
+        to:user.email,
+        subject:"Password reset link",
+        text:message,
+    }).then(()=>{
+        return response.status(200).json({code:"success",message:"email sent successfully"})
+    })
+} catch (error) {
+    user.resetPassword=undefined;
+    user.resetPasswordExpire=undefined;
+    await user.save();
+    return next(new ErrorResponse(`email could not be send ${error.message}`,500))
+}
+
+    } catch (error) {
+           next(error);
+    }
 
 };
 

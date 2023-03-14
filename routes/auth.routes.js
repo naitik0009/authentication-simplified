@@ -4,7 +4,7 @@ const {register,login,forgetPassword,resetPassword} = require("../controller/aut
 
 routes.route("/register").post(register);
 routes.route("/login").post(login);
-routes.route("/forget-password").post(forgetPassword);
+routes.route("/forgot-password").post(forgetPassword);
 routes.route("/reset-password/:reset-token").patch(resetPassword);
 
 module.exports = routes;

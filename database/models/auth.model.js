@@ -14,6 +14,7 @@
     
 //Use this model for mysql database
 // }
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const encrypt = require("bcryptjs");
 const mongoose = require("mongoose");
@@ -54,6 +55,13 @@ userSchema.methods.matchPassword = async function(password){
 userSchema.methods.getSignedToken = function(){
     return jwt.sign({id:this._id},process.env.SECRET_KEY,{expiresIn:process.env.JWT_EXPIRES});
 }
+
+userSchema.methods.getResetPasswordToken= function (){
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    this.resetPasswordExpire=Date.now() + 10 * (60*1000);//i can't write 10 min  here so create 10 min 
+    return resetToken;
+};
 
 const userModel = mongoose.model("User",userSchema);
 
