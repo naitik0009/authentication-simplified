@@ -1,6 +1,7 @@
 const userModel = require("../database/models/auth.model");
 const {ErrorResponse} = require("../utils/errorResponse.utils");
 const sendMail = require("../utils/send.email");
+const crypto = require("crypto");
 async function register (request,response,next){
     
     try {
@@ -84,8 +85,29 @@ try {
 
 };
 
-async function resetPassword (request,response){
-    return response.send("reset password");
+async function resetPassword (request,response,next){
+    let {password} = request.body;
+    if(!password){
+        return next(new ErrorResponse("Please provide a valid password",404));
+    }
+    const recreateToken = crypto.createHash("sha256").update(request.params.reset_token).digest("hex");
+    try {
+        const result = await userModel.findOne({
+            resetPasswordToken:recreateToken,
+            resetPasswordExpire:{$gt:Date.now()}//just to ensure token is not expire
+        });
+        if(!result){
+            return next(new ErrorResponse("Token expired or invalid please try again",400))
+        }
+        result.password=password;
+        result.resetPasswordExpire=undefined;
+        result.resetPasswordToken=undefined;
+        await result.save().then(()=>{
+            return response.status(200).json({code:"success",message:"Congratulation your password has been reset."});
+        });
+    } catch (error) {
+        
+    }
 };
 
 module.exports = {register,login,forgetPassword,resetPassword};
