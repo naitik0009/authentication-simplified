@@ -3,53 +3,51 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-// import FormControlLabel from '@mui/material/FormControlLabel';
-// import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
-const theme = createTheme();
 
-export const Register = () => {
+
+ const Register = () => {
+    const theme = createTheme();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+useEffect(()=>{
+    !localStorage.getItem("authToken")?navigate("/register"):console.log("data");
+},[navigate]);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const config = {
             header: { "Content-Type": "application/json" },
         };
-        // const data = new FormData(event.currentTarget);
-        // if(data){
-        //     setUsername(data.get("username"));
-        //     setEmail(data.get("email"));
-        //     setPassword(data.get("password"));
-        // }
+
         try {
-            const result = await axios.post("/api/v1/register",{username,email,password},config);
-            if(result.code === "success"){
-                localStorage.setItem("authToken",result.token);
-            }
-            Navigate("/profile");
-        } catch (error) {
+            const result = await axios.post("http://127.0.0.1:8000/api/v1/register",{username,email,password},config);
             
+            if(result.data.code === "success"){
+                localStorage.setItem("authToken",result.data.token);
+                navigate("/profile");
+            }
+           
+        } catch (error) {
+            throw error
         }
-        console.log({
-            username: username,
-            email: email,
-            password: password,
-        });
+
     };
 
     return (
+
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
@@ -115,16 +113,11 @@ export const Register = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Sign In
+                            sx={{ mt: 3, mb: 2 }}>
+                            Sign Up
                         </Button>
                         <Grid container>
-                            {/* <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid> */}
+
                             <Grid item>
                                 <Link href="/login" variant="body2">
                                     {"Already have an account? Sign In"}
@@ -138,3 +131,5 @@ export const Register = () => {
         </ThemeProvider>
     );
 }
+
+export default  Register;

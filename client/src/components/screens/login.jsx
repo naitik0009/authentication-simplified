@@ -8,23 +8,41 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-
+import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import axios from "axios";
 
 
 const theme = createTheme();
 
 export const  Login=()=> {
-  const handleSubmit = (event) => {
+    const navigate = useNavigate();
+    const [email,setEmail] = React.useState("");
+    const [password,setPassword] = React.useState("");
+
+    React.useEffect(()=>{
+        localStorage.getItem("authToken")?navigate("/profile"):navigate("/login");
+    },[navigate]);
+
+  const handleSubmit =async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const config = {
+        header: { "Content-Type": "application/json" },
+    };
+
+    try {
+        const result = await axios.post("http://127.0.0.1:8000/api/v1/login",{email,password},config);
+        
+        if(result.data.code === "success"){
+            localStorage.setItem("authToken",result.data.token);
+            navigate("/profile");
+        }
+       
+    } catch (error) {
+        throw error
+    }
   };
 
   return (
@@ -53,6 +71,9 @@ export const  Login=()=> {
               id="email"
               label="Email Address"
               name="email"
+              onChange={(event)=>{
+                setEmail(event.target.value)
+              }}
               autoComplete="email"
               autoFocus
             />
@@ -63,6 +84,9 @@ export const  Login=()=> {
               name="password"
               label="Password"
               type="password"
+              onChange={(event)=>{
+                setPassword(event.target.value)
+              }}
               id="password"
               autoComplete="current-password"
             />

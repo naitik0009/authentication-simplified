@@ -10,7 +10,8 @@ const connect = require("./database/connect");
 app.use(express.json());
 //let's connect to the database:
 connect();
-
+var cors = require('cors');
+app.use(cors());
 // app.use("/api/v1",authRoute,errorHandler); valid approach
 app.use("/api/v1",authRoute);
 app.use("/api/v1",authorizedRoute)
