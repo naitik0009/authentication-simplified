@@ -6,6 +6,7 @@ import { ResetPassword } from './components/screens/reset_password';
 import { AuthorizedRoutes } from "./components/routes/authorized.route";
 import { Profile } from "./components/screens/authorized_screens/user.profile";
 import { NotFound } from "./components/screens/not_found";
+import Home from "./components/screens/home";
 
 function App() {
   return (
@@ -13,10 +14,11 @@ function App() {
       <Route element={<AuthorizedRoutes/>} >
         <Route path="/profile" element={<Profile/>}/>
       </Route>
+      <Route path="/" element={<Home/>} />
       <Route path="/login" element={<Login/>} />
       <Route path="/register" element={<Register/>}/>
       <Route path="forgot-password" element={<ForgotPassword/>}/>
-      <Route path="/reset-password/:reset_token" element={<ResetPassword/>}/>
+      <Route path="/resetPassword/:reset_token" element={<ResetPassword/>}/>
       <Route path="*" element={<NotFound/>}/>
     </Routes>
   );

@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom';
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
 useEffect(()=>{
-    !localStorage.getItem("authToken")?navigate("/register"):console.log("data");
+    !localStorage.getItem("authToken")?navigate("/register"):navigate("/profile");
 },[navigate]);
 
     const handleSubmit = async (event) => {
@@ -36,8 +36,8 @@ useEffect(()=>{
             const result = await axios.post("http://127.0.0.1:8000/api/v1/register",{username,email,password},config);
             
             if(result.data.code === "success"){
-                localStorage.setItem("authToken",result.data.token);
-                navigate("/profile");
+                
+                navigate("/login");
             }
            
         } catch (error) {

@@ -2,17 +2,41 @@ const userModel = require("../database/models/auth.model");
 const {ErrorResponse} = require("../utils/errorResponse.utils");
 const sendMail = require("../utils/send.email");
 const crypto = require("crypto");
+
 async function register (request,response,next){
     
     try {
         let {username,email,password} = request.body;
+        //let's check all the required field
+        if(!username || !email || !password){
+            return next(new ErrorResponse("Please Provide all fields",401));
+        }
+        //check if the username already exist or not:::::
+        const checkUsername = await userModel.findOne({username}).exec();
+        const checkEmail = await userModel.findOne({email}).exec();
+        if(checkUsername || checkEmail){
+            return next(new ErrorResponse("User already exists",400));
+        }
         const result = await userModel.create({
             username,email,password
         });
-        // response.status(200).json({code:"success",message:`User with username ${username} is registered successfully`});   
-        sendToken(result,201,response); 
+        if(!result){
+            return next(new ErrorResponse("Can't create the user please try again",400));
+        }
+        const message = `<h3>Welcome ${username} to AIOEAM.</h3>
+        <p>We wish you a bright future and a good realtion with our organization</p>
+        `;
+        await sendMail({
+            to:email,
+            subject:"Account created successfully",
+            text:message,
+        }).then(()=>{
+            response.status(200).json({code:"success",message:`User with username ${username} is registered successfully`});   
+        })
+       
+        // sendToken(result,201,response); 
     } catch (error) {
-       next(error);
+       next(error.message);
     };
     }
    
@@ -20,7 +44,7 @@ async function register (request,response,next){
 async function login (request,response,next){
     try {
         let {email,password} = request.body;
-        console.log(password);
+        
         if(!email){
           return  next(new ErrorResponse("Please Provide a valid email",401))
         }
@@ -29,7 +53,7 @@ async function login (request,response,next){
         }
         const result = await userModel.findOne({email}).select("+password")//we are asking the password too
         if(!result){
-          return  next(new ErrorResponse("Please Provide a valid username can't find this user",404))
+          return  next(new ErrorResponse("Please Provide a valid username can't find this user",401))
         }
         const matchPassword = await result.matchPassword(password);
         if(!matchPassword){
@@ -44,6 +68,8 @@ async function login (request,response,next){
     }
 
 };
+
+
 
 function sendToken (user,statusCode,response){
     const token = user.getSignedToken();

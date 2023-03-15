@@ -14,6 +14,7 @@
     
 //Use this model for mysql database
 // }
+
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const encrypt = require("bcryptjs");
@@ -29,6 +30,10 @@ const userSchema = new mongoose.Schema({
         unique:[true,"email already used"],
         match:[/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,"Please Provide a valid email address."]
     },
+    verified:{
+        type:Boolean,
+        default:false,
+    },
     password:{
         type:String,
         required:[true,"Please provide your password"],
@@ -39,6 +44,7 @@ const userSchema = new mongoose.Schema({
     resetPasswordExpire:Date,
 });
 
+//if the password is there then hash it but only when it's new or modified while updating the user e.t.c
 userSchema.pre("save",async function(next){
     if(!this.isModified("password")){
         next();
@@ -53,7 +59,7 @@ userSchema.methods.matchPassword = async function(password){
 }
 
 userSchema.methods.getSignedToken = function(){
-    return jwt.sign({id:this._id},process.env.SECRET_KEY,{expiresIn:process.env.JWT_EXPIRES});
+    return jwt.sign({id:this._id,username:this.username},process.env.SECRET_KEY,{expiresIn:process.env.JWT_EXPIRES});
 }
 
 userSchema.methods.getResetPasswordToken= function (){
