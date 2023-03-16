@@ -132,7 +132,7 @@ async function resetPassword (request,response,next){
             return response.status(200).json({code:"success",message:"Congratulation your password has been reset."});
         });
     } catch (error) {
-        
+        next(error)
     }
 };
 
